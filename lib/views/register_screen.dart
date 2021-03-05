@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:phone_book/theme/routes.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:phone_book/views/login_screen.dart';
 
 class Register extends StatefulWidget {
   @override
@@ -121,7 +122,6 @@ class _RegisterState extends State<Register> {
         labelStyle: TextStyle(
           color: Colors.white,
         ),
-        //todo match password and repass
         hintStyle: TextStyle(
           color: Colors.white,
         ),
@@ -146,39 +146,46 @@ class _RegisterState extends State<Register> {
       borderRadius: BorderRadius.circular(25.0),
       color: Colors.white,
       child: MaterialButton(
-        minWidth: mq.size.width / 1.2,
-        padding: EdgeInsets.fromLTRB(10.0, 15.0, 10.0, 15.0),
-        child: Text(
-          "Register",
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            fontSize: 20.0,
-            color: Colors.black,
-            fontWeight: FontWeight.bold,
+          minWidth: mq.size.width / 1.2,
+          padding: EdgeInsets.fromLTRB(10.0, 15.0, 10.0, 15.0),
+          child: Text(
+            "Register",
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 20.0,
+              color: Colors.black,
+              fontWeight: FontWeight.bold,
+            ),
           ),
-        ),
-        onPressed: () async {
-          try {
-            UserCredential userCredential = await FirebaseAuth.instance
-                .createUserWithEmailAndPassword(
-                    email: _emailController.text,
-                    password: _passwordController.text);
-            Navigator.of(context).pushNamed(AppRoutes.authLogin);
-          } on FirebaseAuthException catch (e) {
-            if (e.code == 'weak-password') {
-              print('The password provided is too weak.');
-            } else if (e.code == 'email-already-in-use') {
-              print('The account already exists for that email.');
+          onPressed: () async {
+            if (_userNameController.text.length < 4) {
+              displayToastMessage("Name at least 4 characters.", context);
+            } else if (!_emailController.text.contains("@")) {
+              displayToastMessage("Invalid email", context);
+            } else if (_passwordController.text.length < 6) {
+              displayToastMessage("Password mustat least 6 character", context);
+            } else if (_passwordController.text != _rePasswordController.text) {
+              displayToastMessage(
+                  "Password and Confirm Password should be same", context);
+            } else {
+              try {
+                UserCredential userCredential = await FirebaseAuth.instance
+                    .createUserWithEmailAndPassword(
+                        email: _emailController.text,
+                        password: _passwordController.text);
+                Navigator.of(context).pushNamed(AppRoutes.authLogin);
+              } on FirebaseAuthException catch (e) {
+                if (e.code == 'weak-password') {
+                  displayToastMessage(
+                      "The password provided is too weak.", context);
+                } else if (e.code == 'email-already-in-use') {
+                  displayToastMessage(
+                      "The account already exists for that email.", context);
+                } else
+                  displayToastMessage("Error: " + e.toString(), context);
+              }
             }
-            else print(e);
-            _userNameController.text = "";
-            _passwordController.text = "";
-            _rePasswordController.text = "";
-            _emailController.text = "";
-            //todo alert dialog with error
-          }
-        },
-      ),
+          }),
     );
 
     final bottom = Column(

@@ -6,7 +6,6 @@ import 'package:url_launcher/url_launcher.dart';
 class ContactDetails extends StatefulWidget {
   ContactDetails(this.contact, {this.onContactUpdate, this.onContactDelete});
 
-  //todo make it final
   Contact contact;
   final Function(Contact) onContactUpdate;
   final Function(Contact) onContactDelete;

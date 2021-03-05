@@ -3,6 +3,7 @@ import 'package:phone_book/theme/routes.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:phone_book/widgets/custom_alert_dialog.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class Login extends StatefulWidget {
   @override
@@ -25,7 +26,7 @@ class _LoginState extends State<Login> {
           context: context,
           builder: (BuildContext context) {
             TextEditingController _emailControllerField =
-            TextEditingController();
+                TextEditingController();
             return CustomAlertDialog(
               content: Container(
                 width: MediaQuery.of(context).size.width / 1.2,
@@ -77,7 +78,6 @@ class _LoginState extends State<Login> {
                               Navigator.of(context).pop();
                             } catch (e) {
                               print(e);
-                              // TODO: Add snackbar reporting error
                             }
                           },
                         ),
@@ -198,23 +198,30 @@ class _LoginState extends State<Login> {
           ),
         ),
         onPressed: () async {
-          try {
-            User user = (await FirebaseAuth.instance.signInWithEmailAndPassword(
-              email: _emailController.text,
-              password: _passwordController.text,
-            ))
-                .user;
+          if (!_emailController.text.contains("@")) {
+            displayToastMessage("Email address is not Valid", context);
+          } else if (_passwordController.text.isEmpty) {
+            displayToastMessage("Please provide Password", context);
+          } else {
+            try {
+              User user =
+                  (await FirebaseAuth.instance.signInWithEmailAndPassword(
+                email: _emailController.text,
+                password: _passwordController.text,
+              ))
+                      .user;
 
-            if (user != null) {
-              Navigator.of(context).pushNamedAndRemoveUntil(
-                  AppRoutes.contactList, (route) => false);
-              // Navigator.of(context).pushNamed(AppRoutes.contactList);
+              if (user != null) {
+                Navigator.of(context).pushNamedAndRemoveUntil(
+                    AppRoutes.contactList, (route) => false);
+              }
+            } catch (e) {
+              displayToastMessage(
+                  "Error: " + e.toString(),
+                  context);
+              _emailController.text = "";
+              _passwordController.text = "";
             }
-          } catch (e) {
-            print(e);
-            _emailController.text = "";
-            _passwordController.text = "";
-            //todo alert dialog with error
           }
         },
       ),
@@ -277,4 +284,10 @@ class _LoginState extends State<Login> {
       ),
     );
   }
+
+
+}
+
+displayToastMessage(String message, BuildContext context) {
+  Fluttertoast.showToast(msg: message);
 }
