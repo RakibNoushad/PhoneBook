@@ -1,0 +1,31 @@
+name: phone_book
+description: A new Flutter application.
+
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+version: 1.0.0+1
+
+environment:
+  sdk: ">=2.7.0 <3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.2
+  firebase_core: ^0.7.0
+  firebase_database: ^6.0.0
+  firebase_auth: ^0.20.1
+  scoped_model: ^1.1.0
+  contacts_service: ^0.4.6
+  permission_handler: ^5.1.0+2
+  url_launcher: ^6.0.2
+  get_it: ^6.0.0
+  sqflite: ^2.0.0+2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  uses-material-design: true
+  assets:
+    - logo.png
